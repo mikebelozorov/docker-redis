@@ -1,14 +1,20 @@
 {
-    "data_dir": "/tmp/consul",
-    "datacenter": "${CONSUL_DC}",
-    "ports" : {
-        "dns" : -1
-    },
-    "service": {
-        "name": "${CONSUL_SERVICE_NAME:-redis}",
-        "check": {
-            "Script": "printf 'PING\n' | nc SERVICE_ADDR 6379 | grep -q PONG && printf 'OK' || { printf 'NO PONG' 1>&2 ; exit 1; }",
-            "interval": "10s"
-        }
-    }
+  "data_dir": "/tmp/consul",
+  "datacenter": "${CONSUL_DC}",
+  "ports": {
+    "dns": -1
+  },
+  "enable_script_checks": true,
+  "service": {
+    "name": "${CONSUL_SERVICE_NAME:-redis}",
+    "port": 6379,
+    "checks": [
+      {
+        "args": [
+          "/check.sh"
+        ],
+        "interval": "10s"
+      }
+    ]
+  }
 }
