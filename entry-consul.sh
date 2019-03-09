@@ -1,15 +1,9 @@
 #!/bin/sh
 
-# join listed consul hosts
-if [ -z $CONSUL_JOIN ]; then
-    echo "CONSUL_JOIN is empty"
+if [ -z $CONSUL_HOST ]; then
+    echo "CONSUL_HOST is empty"
     exit 1
 fi
-
-JOIN_STR=""
-for node in $CONSUL_JOIN; do
-    JOIN_STR="${JOIN_STR} -join ${node}"
-done
 
 cp /etc/consul.tpl.json /etc/consul.json
 /usr/local/bin/ep /etc/consul.json
@@ -18,6 +12,11 @@ if [ $ret != 0 ]; then
     echo "envplate failed, some env vars not set"
     exit 1
 fi
-/usr/local/bin/consul agent -config-file /etc/consul.json $JOIN_STR &
+/usr/local/bin/consul agent \
+    -retry-join $CONSUL_HOST \
+    -bind "{{ $CONSUL_BIND_EXPR }}" \
+    -datacenter $CONSUL_DC \
+    -domain $CONSUL_DOMAIN \
+    -config-file /etc/consul.json &
 
 exec docker-entrypoint.sh "$@"
