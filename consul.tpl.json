@@ -1,6 +1,6 @@
 {
   "data_dir": "/tmp/consul",
-  "datacenter": "${CONSUL_DC}",
+  "client_addr": "127.0.0.1",
   "ports": {
     "dns": -1
   },
